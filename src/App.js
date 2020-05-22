@@ -1,25 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function App() {
+  const [techs, setTechs] = useState(['ReactJs', 'React Native']);
+  const [newTech, setNewTech] = useState('');
+
+  // function handleAdd() {
+  //   setTechs([...techs, newTech]);
+  //   setNewTech('');
+  // }
+  const handleAdd = useCallback(() => {
+    setTechs([...techs, newTech]);
+    setNewTech('');
+  }, [newTech, techs]);
+
+  useEffect(() => {
+    const tech = localStorage.getItem('techs');
+
+    if (tech) {
+      setTechs(JSON.parse(tech));
+    }
+
+    // ComponentWillUnmount
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('techs', JSON.stringify(techs));
+  }, [techs]);
+
+  const techSize = useMemo(() => techs.length, [techs]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ul>
+        {techs.map((tech) => (
+          <li key={tech}>{tech}</li>
+        ))}
+      </ul>
+      <strong>Você tem {techSize} tecnologias</strong>
+      <br />
+      <input
+        type="text"
+        value={newTech}
+        onChange={(e) => setNewTech(e.target.value)}
+      />
+      <button type="button" onClick={handleAdd}>
+        Add
+      </button>
+    </>
   );
 }
 
